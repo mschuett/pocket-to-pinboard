@@ -19,9 +19,9 @@ class PocketPinboard:
                          params={'consumer_key': POCKET_CONSUMER_KEY,
                                  'access_token': POCKET_ACCESS_TOKEN,
                                  'since': time,
-                                 'sort': 'newest',
+                                 'sort': 'oldest',
                                  'detailType': 'complete',
-                                 'state': 'all'})
+                                 'state': 'unread'})
         url_tag_list = []
         pocket_items = r.json()
         if len(pocket_items['list']) > 0:
