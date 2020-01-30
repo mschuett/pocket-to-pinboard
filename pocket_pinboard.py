@@ -2,13 +2,15 @@
 import requests
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 POCKET_CONSUMER_KEY = os.environ['POCKET_CONSUMER_KEY']
 POCKET_ACCESS_TOKEN = os.environ['POCKET_ACCESS_TOKEN']
 PINBOARD_USERNAME = os.environ['PINBOARD_USERNAME']
 PINBOARD_API_TOKEN = os.environ['PINBOARD_API_TOKEN']
 
+def timestamp_to_isodate(timestamp):
+    return datetime.fromtimestamp(int(timestamp), timezone.utc).isoformat().replace('+00:00', 'Z')
 
 class PocketPinboard:
     def get_pocket_items(self, time=1):
@@ -30,6 +32,7 @@ class PocketPinboard:
                     item = {'url': value['resolved_url'],
                             'title': value['resolved_title'],
                             'excerpt': value['excerpt'],
+                            'timestamp': value['time_added'],
                             'tags': []}
                     if 'tags' in value.keys():
                         item['tags'] = [tag for tag in value['tags']]
@@ -46,9 +49,11 @@ class PocketPinboard:
                              params={'url': item['url'],
                                      'description': item['title'],
                                      'extended': item['excerpt'],
-                                     'tags': ', '.join(tags)})
+                                     'tags': ', '.join(tags),
+                                     'dt': timestamp_to_isodate(item['timestamp'])
+                                     })
             r.raise_for_status()
-            print("added to pinboard: %s - %s" % (item['url'], item['title']))
+            print("added to pinboard: %s - %s - %s" % (timestamp_to_isodate(item['timestamp']), item['url'], item['title']))
             time.sleep(3)  # Pinboard API requests are limited to one call per user every three seconds
         self.update_timestamp()
 
