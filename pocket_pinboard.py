@@ -31,6 +31,7 @@ class PocketPinboard:
                 "detailType": "complete",
                 "state": "unread",
             },
+            timeout=None,
         )
         url_tag_list = []
         pocket_items = r.json()
@@ -67,6 +68,7 @@ class PocketPinboard:
                     "tags": ", ".join(tags),
                     "dt": timestamp_to_isodate(item["timestamp"]),
                 },
+                timeout=None,
             )
             r.raise_for_status()
             print(
