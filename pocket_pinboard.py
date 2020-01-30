@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import requests
 import os
+import time
 from datetime import datetime
 
 POCKET_CONSUMER_KEY = os.environ['POCKET_CONSUMER_KEY']
@@ -36,8 +37,8 @@ class PocketPinboard:
         return url_tag_list
 
     def post_items_to_pinboard(self):
-        time = self.get_last_update()
-        items = self.get_pocket_items(time=time)
+        starttime = self.get_last_update()
+        items = self.get_pocket_items(time=starttime)
         for item in items:
             tags = [t.replace(" ", "_") for t in item['tags']]
             url = "https://api.pinboard.in/v1/posts/add?auth_token="
@@ -48,6 +49,7 @@ class PocketPinboard:
                                      'tags': ', '.join(tags)})
             r.raise_for_status()
             print("added to pinboard: %s - %s" % (item['url'], item['title']))
+            time.sleep(3)  # Pinboard API requests are limited to one call per user every three seconds
         self.update_timestamp()
 
     def update_timestamp(self):
