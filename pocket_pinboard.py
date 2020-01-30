@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import requests
 import os
 from datetime import datetime
@@ -21,7 +22,7 @@ class PocketPinboard:
         url_tag_list = []
         pocket_items = r.json()
         if len(pocket_items['list']) > 0:
-            for key, value in pocket_items['list'].iteritems():
+            for key, value in pocket_items['list'].items():
                 if all(k in value.keys() for k in ('resolved_url',
                                                    'resolved_title',
                                                    'excerpt')):
@@ -45,8 +46,8 @@ class PocketPinboard:
                                      'description': item['title'],
                                      'extended': item['excerpt'],
                                      'tags': ', '.join(tags)})
-            print r.url
-            print r.text
+            r.raise_for_status()
+            print("added to pinboard: %s - %s" % (item['url'], item['title']))
         self.update_timestamp()
 
     def update_timestamp(self):
